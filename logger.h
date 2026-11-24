@@ -6,9 +6,9 @@
 #include <time.h>
 
 // Tamaños definidos según la diapositiva Logger III
-#define logger_environment_size 10
-#define logger_status_message_size 100
-#define logger_full_message_size (20 + logger_environment_size + logger_status_message_size)
+#define logger_environment_size 16
+#define logger_status_message_size 128
+#define logger_full_message_size 256
 #define log_path_size 256
 
 // Niveles de mensaje según Logger II

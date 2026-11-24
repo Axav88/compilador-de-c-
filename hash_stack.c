@@ -2,19 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-// --- CORE DEL HASH ---
-// Aquí asumo que mantienes tus constantes PRIME32_1 al 5 y la función xxh_rotl del código anterior
-// Solo tienes que pegar esa parte del algoritmo aquí.
-
-// Función original de 32 bits (interna)
-static uint32_t xxhash32_internal(const void *input, size_t len, uint32_t seed) {
-    // (Pega aquí la lógica completa del algoritmo xxhash32 que ya tenías)
-    return 0; // Reemplaza esto con tu algoritmo real
-}
+// Declaración externa de la función xxhash32 implementada en symbol_table.c
+uint32_t xxhash32(const void *input, size_t len, uint32_t seed);
 
 // 1. Modificación a 16 bits (Retorno solicitado)
 uint16_t xxhash16(const void *input, size_t len, uint32_t seed) {
-    uint32_t h32 = xxhash32_internal(input, len, seed);
+    uint32_t h32 = xxhash32(input, len, seed);
     
     // PLEGADO (Folding): Para no perder la calidad matemática de los 16 bits más altos,
     // aplicamos un XOR entre la mitad superior y la mitad inferior.
@@ -26,7 +19,6 @@ uint16_t aplicar_mascara(uint16_t hash) {
     // Un simple AND bit a bit garantiza que el número jamás pase de 1023
     return hash & HASH_MASK; 
 }
-
 
 // --- MÉTODOS DE LA "CLASE" HASH-STACK ---
 
@@ -42,6 +34,7 @@ void hs_table_push(HashStackTable *ht, Token tok) {
     uint16_t indice = aplicar_mascara(hash_16); // Reemplaza el módulo (%)
 
     HashNode *nuevo = (HashNode *)malloc(sizeof(HashNode));
+    if (!nuevo) return;
     nuevo->token = tok;
     nuevo->token.hash = hash_16; // Guardamos el hash corto
 

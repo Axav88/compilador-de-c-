@@ -1,24 +1,7 @@
 #ifndef FIFO_H
 #define FIFO_H
 
-#include <stdint.h>
-#include <stdbool.h>
-
-typedef enum {
-    TOKEN_PALABRA_RESERVADA,
-    TOKEN_OPERADOR_LOGICO,
-    TOKEN_DELIMITADOR,
-    TOKEN_IDENTIFICADOR,
-    TOKEN_NUMERO,
-    TOKEN_EOF
-} TipoToken;
-
-typedef struct {
-    TipoToken tipo;
-    char lexema[128];
-    uint32_t hash;
-    unsigned int linea;
-} Token;
+#include "stack.h"
 
 typedef struct QueueNode {
     Token token;

@@ -60,10 +60,10 @@ uint32_t xxhash32(const void *input, size_t len, uint32_t seed) {
     h32 *= PRIME32_3;
     h32 ^= h32 >> 16;
 
-    return h32&0x3ff;
+    return h32 & 0x3ff;
 }
 
-static HashNode *tabla_simbolos[HASH_TABLE_SIZE];
+static SymHashNode *tabla_simbolos[HASH_TABLE_SIZE];
 
 void symtab_init(void) {
     for (int i = 0; i < HASH_TABLE_SIZE; i++) {
@@ -73,7 +73,8 @@ void symtab_init(void) {
     const char *keywords[] = {
         "int", "float", "double", "char", "void", "if", "else", 
         "while", "for", "return", "switch", "case", "default", 
-        "struct", "typedef", "sizeof", "break", "continue"
+        "struct", "typedef", "sizeof", "break", "continue",
+        "short", "long", "unsigned", "signed"
     };
     for (size_t i = 0; i < sizeof(keywords)/sizeof(keywords[0]); i++) {
         symtab_insert(keywords[i], TOKEN_PALABRA_RESERVADA);
@@ -82,6 +83,21 @@ void symtab_init(void) {
     symtab_insert("&&", TOKEN_OPERADOR_LOGICO);
     symtab_insert("||", TOKEN_OPERADOR_LOGICO);
     symtab_insert("!",  TOKEN_OPERADOR_LOGICO);
+
+    symtab_insert("==", TOKEN_OPERADOR_RELACIONAL);
+    symtab_insert("!=", TOKEN_OPERADOR_RELACIONAL);
+    symtab_insert("<=", TOKEN_OPERADOR_RELACIONAL);
+    symtab_insert(">=", TOKEN_OPERADOR_RELACIONAL);
+    symtab_insert("<",  TOKEN_OPERADOR_RELACIONAL);
+    symtab_insert(">",  TOKEN_OPERADOR_RELACIONAL);
+
+    symtab_insert("=",  TOKEN_ASIGNACION);
+
+    symtab_insert("+",  TOKEN_OPERADOR_ARITMETICO);
+    symtab_insert("-",  TOKEN_OPERADOR_ARITMETICO);
+    symtab_insert("*",  TOKEN_OPERADOR_ARITMETICO);
+    symtab_insert("/",  TOKEN_OPERADOR_ARITMETICO);
+    symtab_insert("%",  TOKEN_OPERADOR_ARITMETICO);
 
     const char *delims[] = {"(", ")", "{", "}", "[", "]", ";", ",", ":"};
     for (size_t i = 0; i < sizeof(delims)/sizeof(delims[0]); i++) {
@@ -93,7 +109,8 @@ void symtab_insert(const char *clave, TipoToken tipo) {
     uint32_t hash = xxhash32(clave, strlen(clave), 0);
     size_t idx = hash % HASH_TABLE_SIZE;
 
-    HashNode *nodo = (HashNode *)malloc(sizeof(HashNode));
+    SymHashNode *nodo = (SymHashNode *)malloc(sizeof(SymHashNode));
+    if (!nodo) return;
     nodo->clave = strdup(clave);
     nodo->tipo = tipo;
     nodo->siguiente = tabla_simbolos[idx];
@@ -104,7 +121,7 @@ TipoToken symtab_lookup(const char *clave) {
     uint32_t hash = xxhash32(clave, strlen(clave), 0);
     size_t idx = hash % HASH_TABLE_SIZE;
 
-    HashNode *act = tabla_simbolos[idx];
+    SymHashNode *act = tabla_simbolos[idx];
     while (act) {
         if (strcmp(act->clave, clave) == 0) {
             return act->tipo;
